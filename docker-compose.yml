@@ -1,0 +1,82 @@
+version: '3.4'
+name: local-services
+
+services:
+  postgres-local-instance:
+    image: postgres:14.5-alpine
+    container_name: postgres-server-local
+    restart: on-failure
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - store-postgres-data-local:/var/lib/postgresql/data
+    networks:
+      - net-postgres-local
+
+  pgadmin-local-instance:
+    image: dpage/pgadmin4:6.12
+    container_name: pgadmin
+    restart: on-failure
+    ports:
+      - 8085:80
+    depends_on:
+      - postgres-local-instance
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=pgadmin4@marcoshssilva.com.br
+      - PGADMIN_DEFAULT_PASSWORD=pgadmin4
+    volumes:
+      - store-pgadmin-data-local:/var/lib/pgadmin
+    networks:
+      - net-postgres-local
+
+  redis-cache-local:
+    image: redis:6.2-alpine
+    container_name: redis-server
+    restart: on-failure
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass MARCOSHSSILVA#20230101
+    volumes: 
+      - store-redis-data-local:/data
+    networks:
+      - net-redis-local
+
+  rabbitmq-local:
+    image: rabbitmq:3.9-management
+    container_name: rabbitmq-broker
+    environment:
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASSWORD=guest
+    restart: on-failure
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    volumes:
+        - store-rabbit-data:/var/lib/rabbitmq
+        - store-rabbit-logs:/var/log/rabbitmq
+    networks:
+      - net-rabbitmq-local
+
+volumes:
+  store-postgres-data-local:
+    driver: local
+  store-pgadmin-data-local:
+    driver: local
+  store-redis-data-local:
+    driver: local
+  store-rabbit-data:
+    driver: local
+  store-rabbit-logs:
+    driver: local
+
+networks:
+  net-postgres-local:
+    driver: bridge
+  net-redis-local:
+    driver: bridge
+  net-rabbitmq-local:
+    driver: bridge
+  net-jenkins-local:
+    driver: bridge
