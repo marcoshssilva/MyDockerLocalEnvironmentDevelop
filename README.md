@@ -13,12 +13,12 @@ docker-compose -f "docker-compose.yml" up -d
 docker-compose down
 ```
 
-### Stop with no volumes
+### Stop with delete volumes
 ```
 docker-compose down --volumes
 ```
 
-### Stop with no volumes and no images
+### Stop with no volumes and remove images from builds
 ```
 docker-compose down --volumes --rmi
 ```
