@@ -20,5 +20,5 @@ docker-compose down --volumes
 
 ### Stop with no volumes and remove images from builds
 ```
-docker-compose down --volumes --rmi
+docker-compose down --volumes --rmi=all
 ```
