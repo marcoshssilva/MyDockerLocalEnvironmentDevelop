@@ -57,6 +57,35 @@ services:
     networks:
       - net-rabbitmq-local
 
+  mongo:
+    image: mongo:6.0.5
+    container_name: mongodb-server
+    restart: on-failure
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: secret
+    volumes:
+      - store-mongodb-data:/data/db
+    ports:
+      - '27017:27017'
+    networks:
+      - net-mongodb-local
+  
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express-web
+    restart: on-failure
+    ports:
+      - '8086:8081'
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: admin
+      ME_CONFIG_MONGODB_URL: mongodb://root:secret@mongo:27017/
+    networks:
+      - net-mongodb-local
+    depends_on:
+      - mongo
+  
 volumes:
   store-postgres-data-local:
     driver: local
@@ -68,6 +97,8 @@ volumes:
     driver: local
   store-rabbit-logs:
     driver: local
+  store-mongodb-data:
+    driver: local
 
 networks:
   net-postgres-local:
@@ -75,4 +106,6 @@ networks:
   net-redis-local:
     driver: bridge
   net-rabbitmq-local:
+    driver: bridge
+  net-mongodb-local:
     driver: bridge
