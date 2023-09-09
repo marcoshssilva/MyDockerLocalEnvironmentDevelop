@@ -74,7 +74,7 @@ services:
   mongo-express:
     image: mongo-express
     container_name: mongo-express-web
-    restart: on-failure
+    restart: always # to fix restart when mongodb is not up
     ports:
       - '8086:8081'
     environment:
