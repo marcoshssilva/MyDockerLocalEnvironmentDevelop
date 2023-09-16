@@ -85,6 +85,40 @@ services:
       - net-mongodb-local
     depends_on:
       - mongo
+
+  spider-mail-archiever:
+    image: marcoshssilva/custom-spider-mail-server:latest
+    container_name: spider-mail-archiever
+    restart: on-failure
+    ports:
+      - 25:25
+      - 993:993
+      - 8087:8080
+    volumes:
+      - store-spider-mail-archiever-data:/opt/spider
+    networks:
+      - net-spider-mail-archiever-local
+
+  # roundcube-mail:
+  #   image: roundcube/roundcubemail
+  #   container_name: 'roundcube'
+  #   restart: on-failure
+  #   ports:
+  #     - 8088:80
+  #   environment:
+  #     ROUNDCUBEMAIL_DEFAULT_HOST: tls://host.docker.internal
+  #     ROUNDCUBEMAIL_DEFAULT_PORT: 993
+  #     ROUNDCUBEMAIL_SMTP_SERVER: tls://host.docker.internal
+  #     ROUNDCUBEMAIL_SMTP_PORT: 25
+  #     ROUNDCUBEMAIL_DB_TYPE: pgsql
+  #     ROUNDCUBEMAIL_DB_HOST: postgres-local-instance
+  #     ROUNDCUBEMAIL_DB_PORT: 5432
+  #     ROUNDCUBEMAIL_DB_NAME: roundcubemail
+  #     ROUNDCUBEMAIL_DB_USER: postgres
+  #     ROUNDCUBEMAIL_DB_PASSWORD: postgres
+  #   networks:
+  #     - net-spider-mail-archiever-local
+  #     - net-postgres-local
   
 volumes:
   store-postgres-data-local:
@@ -99,6 +133,8 @@ volumes:
     driver: local
   store-mongodb-data:
     driver: local
+  store-spider-mail-archiever-data:
+    driver: local
 
 networks:
   net-postgres-local:
@@ -108,4 +144,6 @@ networks:
   net-rabbitmq-local:
     driver: bridge
   net-mongodb-local:
+    driver: bridge
+  net-spider-mail-archiever-local:
     driver: bridge
